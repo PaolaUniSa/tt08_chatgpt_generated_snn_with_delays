@@ -1,24 +1,22 @@
 module LIF_Neuron_debug #(
-    parameter M = 8,                   // Number of input spikes and weights
-    parameter Nbits = 2		      // Nbits weight precision and membrane potential
+    parameter M = 8                   // Number of input spikes and weights	      // Nbits weight precision and membrane potential
 )(
     input wire clk,                        // Clock signal
     input wire reset,                      // Asynchronous reset, active high
     input wire enable,                     // Enable input for the entire LIF neuron
     input wire [M-1:0] input_spikes,       // M-bit input spikes
-    input wire [M*Nbits-1:0] weights,          // M Nbit weights
-    input wire [Nbits-1:0] threshold,            // Firing threshold (V_thresh)
-    input wire [Nbits-1:0] decay,                // Decay value
-    input wire [Nbits-1:0] refractory_period,    // Refractory period in number of clock cycles
-    output wire [Nbits-1:0] membrane_potential_out, // add for debug
+    input wire [M*2-1:0] weights,          // M Nbit weights
+    input wire [2-1:0] threshold,            // Firing threshold (V_thresh)
+    input wire [2-1:0] decay,                // Decay value
+    input wire [2-1:0] refractory_period,    // Refractory period in number of clock cycles
+    output wire [2-1:0] membrane_potential_out, // add for debug
     output wire spike_out                  // Output spike signal
 );
-    wire [Nbits-1:0] input_current;         // Nbit input current from InputCurrentCalculator
+    wire [2-1:0] input_current;         // Nbit input current from InputCurrentCalculator
 
     // Instantiate the InputCurrentCalculator module
     InputCurrentCalculator #(
-        .M(M),
-        .Nbits(Nbits)
+        .M(M)
     ) input_current_calculator_inst (
         .clk(clk),
         .reset(reset),
@@ -29,9 +27,7 @@ module LIF_Neuron_debug #(
     );
 
     // Instantiate the LeakyIntegrateFireNeuron module
-    LeakyIntegrateFireNeuron_debug #(
-    	.Nbits(Nbits)
-    ) lif_neuron_inst (
+    LeakyIntegrateFireNeuron_debug  lif_neuron_inst (
         .clk(clk),
         .reset(reset),
         .enable(enable),

@@ -1,5 +1,4 @@
-module spiking_network_top #(
-    parameter Nbits = 4 )               // Number of bits for the weights and membrane potential
+module spiking_network_top              // Number of bits for the weights and membrane potential
  (
     input wire system_clock,
     input wire reset,
@@ -17,16 +16,16 @@ module spiking_network_top #(
     wire clk_div_ready_sync;
     wire input_spike_ready_sync;   
     wire debug_config_ready_sync;
-    wire [(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8-1+8:0] all_data_out; //3*8 +8+8+8+ 208*8 +8=208*8+56=1664+56 =1720  -- 215 bytes
+    wire [(24*8+8*2)*4+(24*8+8*2)*2+4*2+3*8+8-1+8:0] all_data_out; //3*8 +8+8+8+ 208*8 +8=208*8+56=1664+56 =1720  -- 215 bytes
     wire [23:0] input_spikes;   //[23:0] input_spikes;
-    wire [Nbits-1:0] decay;
-    wire [Nbits-1:0] refractory_period;
-    wire [Nbits-1:0] threshold;
+    wire [2-1:0] decay;
+    wire [2-1:0] refractory_period;
+    wire [2-1:0] threshold;
     wire [7:0] div_value;
-    wire [(24*8+8*2)*Nbits-1:0] weights;
+    wire [(24*8+8*2)*2-1:0] weights;
     wire [(24*8+8*2)*4-1:0] delays;
     wire [7:0] debug_config_in;
-    wire [(8+2)*Nbits-1:0] membrane_potentials; //79
+    wire [(8+2)*2-1:0] membrane_potentials; //79
     wire [8-1:0] output_spikes_layer1;
     wire delay_clk;
     
@@ -53,7 +52,7 @@ module spiking_network_top #(
         .clk_out(delay_clk)
     );
 
-    debug_module #(.Nbits(Nbits)) debug_inst  (
+    debug_module debug_inst  (
         .clk(system_clock),
         .rst(reset),
         .en(debug_config_ready_sync),
@@ -63,7 +62,7 @@ module spiking_network_top #(
         .debug_select(debug_output)
     );
 
-    SNNwithDelays_top #(.Nbits(Nbits)) snn_inst (
+    SNNwithDelays_top snn_inst (
         .clk(system_clock),
         .reset(reset),
         .enable(input_spike_ready_sync),
@@ -112,13 +111,13 @@ module spiking_network_top #(
     // Corrected Assignments
     // 3*8  +8 +8+8+ 208*8+8=208*8 +56=1664+56=   1720
 	assign input_spikes = all_data_out      [3*8-1                          :                      0];   // 3 bytes
-    assign decay = all_data_out             [Nbits+3*8-1                    :                    3*8];   // 0:1 bits in the 4Â° byte
-    assign refractory_period = all_data_out [2*Nbits+3*8-1                  :              Nbits+3*8];   // 2:3 bits in the 4Â° byte
-    assign threshold = all_data_out         [3*Nbits+3*8-1     :                 2*Nbits+3*8];          // 4:5 bits in the 4Â° byte
-    assign div_value = all_data_out         [4*Nbits+3*8+8-1:4*Nbits+3*8];                              // 5Â° byte
-    assign weights = all_data_out           [(24*8+8*2)*Nbits+4*Nbits+3*8+8-1:4*Nbits+3*8+8];           //Nbits=2 is 416 bits -> 52 bytes (6:57)         
-    assign delays = all_data_out            [(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8-1 :(24*8+8*2)*Nbits+4*Nbits+3*8+8]; // 832 bits (104 bytes)
-    assign debug_config_in = all_data_out   [(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8-1+8:(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8]; 
+    assign decay = all_data_out             [2+3*8-1                    :                    3*8];   // 0:1 bits in the 4° byte
+    assign refractory_period = all_data_out [2*2+3*8-1                  :              2+3*8];   // 2:3 bits in the 4° byte
+    assign threshold = all_data_out         [3*2+3*8-1     :                 2*2+3*8];          // 4:5 bits in the 4° byte
+    assign div_value = all_data_out         [4*2+3*8+8-1:4*2+3*8];                              // 5° byte
+    assign weights = all_data_out           [(24*8+8*2)*2+4*2+3*8+8-1:4*2+3*8+8];           //Nbits=2 is 416 bits -> 52 bytes (6:57)         
+    assign delays = all_data_out            [(24*8+8*2)*4+(24*8+8*2)*2+4*2+3*8+8-1 :(24*8+8*2)*2+4*2+3*8+8]; // 832 bits (104 bytes)
+    assign debug_config_in = all_data_out   [(24*8+8*2)*4+(24*8+8*2)*2+4*2+3*8+8-1+8:(24*8+8*2)*4+(24*8+8*2)*2+4*2+3*8+8]; 
 
 //(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8+8   with Nbits=2 = 1296   ---> 162 bytes
 endmodule   
