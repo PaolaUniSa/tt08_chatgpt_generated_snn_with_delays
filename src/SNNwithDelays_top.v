@@ -1,15 +1,17 @@
-module SNNwithDelays_top (
+module SNNwithDelays_top #(
+    parameter Nbits = 4			   // Nbits precision
+)(
     input wire clk,                        // Clock signal
     input wire reset,                      // Asynchronous reset, active high
     input wire enable,                     // Enable input for the entire network
     input wire delay_clk,                  // Delay Clock signal
     input wire [23:0] input_spikes,        // M1-bit input spikes for the first layer
-    input wire [(24*8+8*2)*2-1:0] weights,           // Combined weights for both layers (N1*M1*8 + N2*N1*8 bits)
-    input wire [2-1:0] threshold,            // Firing threshold for both layers
-    input wire [2-1:0] decay,                // Decay value for both layers
-    input wire [2-1:0] refractory_period,    // Refractory period for both layers
+    input wire [(24*8+8*2)*Nbits-1:0] weights,           // Combined weights for both layers (N1*M1*8 + N2*N1*8 bits)
+    input wire [Nbits-1:0] threshold,            // Firing threshold for both layers
+    input wire [Nbits-1:0] decay,                // Decay value for both layers
+    input wire [Nbits-1:0] refractory_period,    // Refractory period for both layers
     input wire [(8*24+8*2)*4-1:0] delays,             // Combined delay values and delays for both layers (8*24*4 + 2*8*4 bits)
-    output wire [(8+2)*2-1:0] membrane_potential_out, // (8+2)*Nbits bits
+    output wire [(8+2)*Nbits-1:0] membrane_potential_out, // (8+2)*Nbits bits
     output wire [7:0] output_spikes_layer1,    // Output spike signals for the first layer
     output wire [1:0] output_spikes           // Output spike signals for the second layer
 );
@@ -45,15 +47,16 @@ module SNNwithDelays_top (
     TwoLayerNetwork_debug #(
         .M1(24), 
         .N1(8), 
-        .N2(2)
+        .N2(2),
+        .Nbits(Nbits)
     ) two_layer_network_inst (
         .clk(clk),
         .reset(reset),
         .enable(enable),
         .delay_clk(delay_clk),
         .input_spikes(input_spikes),
-        .weights1(weights[24*8*2-1:0]),         // weights1 part of the combined weights array
-        .weights2(weights[24*8*2+8*2*2-1:24*8*2]),       // weights2 part of the combined weights array
+        .weights1(weights[24*8*Nbits-1:0]),         // weights1 part of the combined weights array
+        .weights2(weights[24*8*Nbits+8*2*Nbits-1:24*8*Nbits]),       // weights2 part of the combined weights array
         .threshold1(threshold),
         .decay1(decay),
         .refractory_period1(refractory_period),

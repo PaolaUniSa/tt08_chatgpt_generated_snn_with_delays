@@ -1,18 +1,19 @@
 module NeuronWithDelays_debug #(
-    parameter M = 2                // Number of input spikes and weights		// Nbit precision
+    parameter M = 2,                // Number of input spikes and weights
+    parameter Nbits = 4			// Nbit precision
 )(
     input wire clk,                      // Clock signal
     input wire reset,                    // Asynchronous reset, active high
     input wire enable,                   // Enable input for the entire neuron
     input wire delay_clk,                // Delay Clock signal
     input wire [M-1:0] input_spikes,     // M-bit input spikes
-    input wire [M*2-1:0] weights,        // M Nbit weights
-    input wire [2-1:0] threshold,          // Firing threshold (V_thresh)
-    input wire [2-1:0] decay,              // Decay value
-    input wire [2-1:0] refractory_period,  // Refractory period in number of clock cycles
+    input wire [M*Nbits-1:0] weights,        // M Nbit weights
+    input wire [Nbits-1:0] threshold,          // Firing threshold (V_thresh)
+    input wire [Nbits-1:0] decay,              // Decay value
+    input wire [Nbits-1:0] refractory_period,  // Refractory period in number of clock cycles
     input wire [M*3-1:0] delay_values,   // Flattened array of 3-bit delay values
     input wire [M-1:0] delays,           // Array of delay enables for each input
-    output wire [2-1:0] membrane_potential_out, // add for debug
+    output wire [Nbits-1:0] membrane_potential_out, // add for debug
     output wire spike_out                // Output spike signal
 );
     wire [M-1:0] delayed_spikes;     // Delayed input spikes
@@ -36,7 +37,8 @@ module NeuronWithDelays_debug #(
 
     // Instantiate the LIF_Neuron module
     LIF_Neuron_debug #(
-        .M(M)
+        .M(M),
+        .Nbits(Nbits)
     ) lif_neuron_inst (
         .clk(clk),
         .reset(reset),

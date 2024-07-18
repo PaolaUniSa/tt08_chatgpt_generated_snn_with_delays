@@ -1,11 +1,12 @@
 module spi_interface 
+#(parameter Nbits = 4 ) 
 (
     input wire SCLK, MOSI, SS, RESET,
     output wire MISO,
     output wire clk_div_ready_reg_out,
     output wire input_spike_ready_reg_out,
     output wire debug_config_ready_reg_out,
-    output wire [(24*8+8*2)*4+(24*8+8*2)*2+4*2+3*8+8-1+8:0] all_data_out //3*8+8+8+8+208*8+8=208*8+56=1664+56=1720 //[320*8-1:0] all_data_out //output wire [M*N-1:0] all_data_out //224
+    output wire [(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8-1+8:0] all_data_out //3*8+8+8+8+208*8+8=208*8+56=1664+56=1720 //[320*8-1:0] all_data_out //output wire [M*N-1:0] all_data_out //224
 );
     // Internal signals
     wire [7:0] received_data;
@@ -70,7 +71,7 @@ module spi_interface
     );
 
     // Instantiate the memory module
-    memory memory_inst ( //215
+    memory #(162, 8) memory_inst ( //215
         .data_in(received_data),
         .addr(SPI_address_LSB_reg_out[6:0]), //.addr({SPI_address_MSB_reg_out[0], SPI_address_LSB_reg_out}),
         .write_enable(write_memory_enable),
