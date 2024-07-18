@@ -1,4 +1,4 @@
-module spiking_network_top#(
+module spiking_network_top #(
     parameter Nbits = 4 )               // Number of bits for the weights and membrane potential
  (
     input wire system_clock,
@@ -112,10 +112,10 @@ module spiking_network_top#(
     // Corrected Assignments
     // 3*8  +8 +8+8+ 208*8+8=208*8 +56=1664+56=   1720
 	assign input_spikes = all_data_out      [3*8-1                          :                      0];   // 3 bytes
-    assign decay = all_data_out             [Nbits+3*8-1                    :                    3*8];   // 0:1 bits in the 4° byte
-    assign refractory_period = all_data_out [2*Nbits+3*8-1                  :              Nbits+3*8];   // 2:3 bits in the 4° byte
-    assign threshold = all_data_out         [3*Nbits+3*8-1     :                 2*Nbits+3*8];          // 4:5 bits in the 4° byte
-    assign div_value = all_data_out         [4*Nbits+3*8+8-1:4*Nbits+3*8];                              // 5° byte
+    assign decay = all_data_out             [Nbits+3*8-1                    :                    3*8];   // 0:1 bits in the 4Â° byte
+    assign refractory_period = all_data_out [2*Nbits+3*8-1                  :              Nbits+3*8];   // 2:3 bits in the 4Â° byte
+    assign threshold = all_data_out         [3*Nbits+3*8-1     :                 2*Nbits+3*8];          // 4:5 bits in the 4Â° byte
+    assign div_value = all_data_out         [4*Nbits+3*8+8-1:4*Nbits+3*8];                              // 5Â° byte
     assign weights = all_data_out           [(24*8+8*2)*Nbits+4*Nbits+3*8+8-1:4*Nbits+3*8+8];           //Nbits=2 is 416 bits -> 52 bytes (6:57)         
     assign delays = all_data_out            [(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8-1 :(24*8+8*2)*Nbits+4*Nbits+3*8+8]; // 832 bits (104 bytes)
     assign debug_config_in = all_data_out   [(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8-1+8:(24*8+8*2)*4+(24*8+8*2)*Nbits+4*Nbits+3*8+8]; 
