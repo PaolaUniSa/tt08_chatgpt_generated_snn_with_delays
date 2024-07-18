@@ -70,7 +70,7 @@ module spi_interface
     );
 
     // Instantiate the memory module
-    memory #(162, 8) memory_inst ( //215
+    memory memory_inst ( //215
         .data_in(received_data),
         .addr(SPI_address_LSB_reg_out[6:0]), //.addr({SPI_address_MSB_reg_out[0], SPI_address_LSB_reg_out}),
         .write_enable(write_memory_enable),

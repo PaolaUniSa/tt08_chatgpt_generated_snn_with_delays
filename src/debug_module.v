@@ -1,4 +1,4 @@
-module debug_module(
+module debug_module (
     input wire clk,
     input wire rst,    // Active high reset
     input wire en,     // Enable signal
