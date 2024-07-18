@@ -15,10 +15,16 @@ module memory #(parameter M = 162, parameter N = 8) (
     always @(posedge clk or posedge reset) begin
         if (reset) begin
             // Asynchronous reset: clear all memory contents
-            for (i = 0; i < M; i = i + 1) begin
-                mem[i] <= 0; 
-            end
-             // mem[0] <= 0; 
+            //for (i = 0; i < M; i = i + 1) begin
+               // mem[i] <= 0; 
+            //end
+             mem[0] <= 0; 
+            mem[1] <= 0; 
+            mem[2] <= 0; 
+            mem[3] <= 0; 
+            mem[4] <= 0; 
+            mem[5] <= 0; 
+            mem[6] <= 0; 
         end else if (write_enable) begin
             mem[addr] <= data_in;  // Write data to memory
         end
