@@ -17,44 +17,59 @@ module tt_um_chatgpt_snn_with_delays_paolaunisa (
 );
 
 
-    wire reset = ! rst_n;
-    wire SCLK;
-    wire MOSI;
-    wire CS;
-    wire MISO;
-    wire [7:0] debug_output;
+
+    // Internal signals for the SNNwithDelays_top instance
+    wire [23:0] input_spikes;
+    wire [(24*8+8*2)*2-1:0] weights;
+    wire [2-1:0] threshold;
+    wire [2-1:0] decay;
+    wire [2-1:0] refractory_period;
+    wire [(8*24+8*2)*4-1:0] delays;
+    wire [(8+2)*2-1:0] membrane_potential_out;
+    wire [7:0] output_spikes_layer1;
     wire [1:0] output_spikes;
 
+    // Map ui_in to input_spikes and other inputs
+    assign input_spikes = {3{ui_in[7:0]}}; // Assuming ui_in carries the input spikes
+    assign weights = {52{ui_in[7:0]}};
+    
+    assign threshold= ui_in[1:0];
+    assign decay = ui_in[1:0];
+    assign refractory_period = ui_in[1:0];
+    
+    assign delays = {52{ui_in[7:0]}};
+    // Map other ui_in signals to the appropriate internal signals
+    // Similarly, assign values for weights, threshold, decay, refractory_period, and delays
+    // according to your design requirements
+
+    // Output mappings
+    assign uo_out[7:0] = output_spikes_layer1[7:0];
+    assign uio_out[1:0] = output_spikes[1:0];
+    assign uio_out[7:2] = 6'b000000;
+    assign uio_oe = 8'b11111111; // Enable all uio_out signals
 
 
-spiking_network_top  spiking_network_top_uut (
-    .system_clock(clk),
-    .reset(reset),
-    .SCLK(SCLK),
-    .MOSI(MOSI),
-    .SS(CS),
-    .MISO(MISO),
-    .debug_output(debug_output),
-    .output_spikes(output_spikes)
-);
+// List all unused inputs to prevent warnings
+  wire _unused = &{ena,uio_in, 1'b0};
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out=debug_output;
-  
-  assign uio_oe = 8'b00110100;
-  //input
-  assign CS=uio_in[0];
-  assign MOSI=uio_in[1];
-  assign SCLK=uio_in[3];
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, ui_in,uio_in[2],uio_in[7:4], 1'b0};
-  
-  //output
-  assign uio_out[1:0]=2'b00;
-  assign uio_out[2]=MISO;
-  assign uio_out[3]=1'b0;
-  assign uio_out[5:4]=output_spikes;
-  assign uio_out[7:6]=2'b00;
 
-  
+    // Instantiate the SNNwithDelays_top module
+    SNNwithDelays_top #(
+        .Nbits(2)
+    ) snn_with_delays (
+        .clk(clk),
+        .reset(~rst_n),                    // Convert active low reset to active high
+        .enable(ena),
+        .delay_clk(clk),                   // Assuming delay_clk is the same as clk
+        .input_spikes(input_spikes),
+        .weights(weights),
+        .threshold(threshold),
+        .decay(decay),
+        .refractory_period(refractory_period),
+        .delays(delays),
+        .membrane_potential_out(membrane_potential_out),
+        .output_spikes_layer1(output_spikes_layer1),
+        .output_spikes(output_spikes)
+    );
+
 endmodule

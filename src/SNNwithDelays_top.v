@@ -1,5 +1,5 @@
 module SNNwithDelays_top #(
-    parameter Nbits = 4			   // Nbits precision
+    parameter Nbits = 2			   // Nbits precision
 )(
     input wire clk,                        // Clock signal
     input wire reset,                      // Asynchronous reset, active high
