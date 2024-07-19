@@ -37,7 +37,7 @@ module tt_um_chatgpt_snn_with_delays_paolaunisa (
     assign decay = ui_in[1:0];
     assign refractory_period = ui_in[1:0];
     
-    assign delays = {52{ui_in[7:0]}};
+    assign delays = {104{ui_in[7:0]}};
     // Map other ui_in signals to the appropriate internal signals
     // Similarly, assign values for weights, threshold, decay, refractory_period, and delays
     // according to your design requirements
