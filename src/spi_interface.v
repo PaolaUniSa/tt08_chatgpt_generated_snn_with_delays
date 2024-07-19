@@ -71,15 +71,17 @@ module spi_interface
     );
 
     // Instantiate the memory module
-    memory #(162, 8) memory_inst ( //215
-        .data_in(received_data),
-        .addr(SPI_address_LSB_reg_out[6:0]), //.addr({SPI_address_MSB_reg_out[0], SPI_address_LSB_reg_out}),
-        .write_enable(write_memory_enable),
-        .clk(SCLK),
-        .reset(RESET),
-        .data_out(data_to_send),
-        .all_data_out(all_data_out)
-    );
+//    memory #(162, 8) memory_inst ( //215
+//        .data_in(received_data),
+//        .addr(SPI_address_LSB_reg_out[6:0]), //.addr({SPI_address_MSB_reg_out[0], SPI_address_LSB_reg_out}),
+//        .write_enable(write_memory_enable),
+//        .clk(SCLK),
+//        .reset(RESET),
+//        .data_out(data_to_send),
+//        .all_data_out(all_data_out)
+//    );
+    
+     assign all_data_out = {162{received_data}};
 
     // Register assignments
     always @(posedge SCLK or posedge RESET) begin
